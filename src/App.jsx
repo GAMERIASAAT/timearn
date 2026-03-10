@@ -539,8 +539,11 @@ export default function App() {
     // The h-[100dvh] + overflow-hidden prevents the overall body from scrolling.
     <div className="h-[100dvh] bg-gray-100 flex flex-col text-gray-900 font-sans selection:bg-blue-200 overflow-hidden relative">
       
-      {/* Top App Bar */}
-      <header className="bg-blue-600 text-white p-4 shadow-md z-20 flex items-center justify-between shrink-0">
+      {/* Top App Bar - NOW INCLUDES SAFE-AREA INSET FIX */}
+      <header 
+        className="bg-blue-600 text-white px-4 pb-4 shadow-md z-20 flex items-center justify-between shrink-0"
+        style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
+      >
         <div className="flex items-center space-x-3">
           <Clock size={24} className="opacity-90" />
           <h1 className="text-xl font-bold tracking-wide">TimeEarn</h1>
@@ -557,8 +560,11 @@ export default function App() {
         </div>
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="absolute bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center px-1 pt-2 pb-5 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] safe-area-pb">
+      {/* Bottom Navigation - NOW INCLUDES SAFE-AREA INSET FIX for Bottom Nav Gestures */}
+      <nav 
+        className="absolute bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center px-1 pt-2 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]"
+        style={{ paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}
+      >
         {navItems.map(item => {
           const isActive = activeTab === item.id;
           return (
@@ -642,6 +648,4 @@ export default function App() {
     </div>
   );
 }
-
-
 
