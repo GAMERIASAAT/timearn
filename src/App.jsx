@@ -14,7 +14,9 @@ import {
   FileText,
   Copy,
   CheckCircle2,
-  Share
+  Share,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 // --- Utility Functions ---
@@ -78,6 +80,12 @@ const formatTimeWithPeriod = (timeStr) => {
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   
+  // --- State: Theme ---
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('timeearn_theme');
+    return savedTheme ? JSON.parse(savedTheme) : false;
+  });
+
   // --- State: Modals ---
   const [jobToDelete, setJobToDelete] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
@@ -113,6 +121,10 @@ export default function App() {
     });
   }, [entries, reportParams]);
 
+  // --- Effects: Theme Storage ---
+  useEffect(() => {
+    localStorage.setItem('timeearn_theme', JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
 
   // --- Effects: Save to Offline Storage ---
   useEffect(() => {
@@ -247,32 +259,32 @@ export default function App() {
       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-6">
         {/* Month Summary Cards */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-center">
-            <div className="flex items-center space-x-2 text-blue-600 mb-2">
+          <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col justify-center transition-colors">
+            <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400 mb-2">
               <Clock size={18} />
               <span className="text-xs font-semibold uppercase tracking-wider">Hours</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{totalMonthHours.toFixed(2)} <span className="text-sm font-normal text-gray-500">hrs</span></h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalMonthHours.toFixed(2)} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">hrs</span></h3>
           </div>
           
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-center">
-            <div className="flex items-center space-x-2 text-green-600 mb-2">
+          <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col justify-center transition-colors">
+            <div className="flex items-center space-x-2 text-green-600 dark:text-green-400 mb-2">
               <DollarSign size={18} />
               <span className="text-xs font-semibold uppercase tracking-wider">Earned</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{formatCurrency(totalMonthEarnings)}</h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{formatCurrency(totalMonthEarnings)}</h3>
           </div>
         </div>
 
         {/* Recent Entries List */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">Recent Logs</h3>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden transition-colors">
+          <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex justify-between items-center">
+            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Recent Logs</h3>
           </div>
           
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-100 dark:divide-gray-800">
             {entries.length === 0 ? (
-              <div className="p-8 flex flex-col items-center justify-center text-gray-400">
+              <div className="p-8 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
                 <Calendar size={48} className="mb-3 opacity-20" />
                 <p className="text-sm text-center">No work entries yet.<br/>Go to Tracker to log hours.</p>
               </div>
@@ -280,23 +292,23 @@ export default function App() {
               entries.slice(0, 10).map(entry => {
                 const job = jobs.find(j => j.id === entry.jobId);
                 return (
-                  <div key={entry.id} className="p-4 flex flex-col active:bg-gray-50 transition-colors">
+                  <div key={entry.id} className="p-4 flex flex-col active:bg-gray-50 dark:active:bg-gray-800 transition-colors">
                     <div className="flex justify-between items-start mb-1">
-                      <p className="font-bold text-gray-900 text-base">{job ? job.name : 'Unknown Job'}</p>
-                      <span className="text-green-600 font-bold text-base">{formatCurrency(entry.earnings)}</span>
+                      <p className="font-bold text-gray-900 dark:text-gray-100 text-base">{job ? job.name : 'Unknown Job'}</p>
+                      <span className="text-green-600 dark:text-green-400 font-bold text-base">{formatCurrency(entry.earnings)}</span>
                     </div>
-                    <div className="flex justify-between items-end text-sm text-gray-500">
+                    <div className="flex justify-between items-end text-sm text-gray-500 dark:text-gray-400">
                       <div>
                         <p>{formatDate(entry.date)}</p>
                         <p className="text-xs mt-0.5">{formatTimeWithPeriod(entry.startTime)} - {formatTimeWithPeriod(entry.endTime)}</p>
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md text-xs mb-1">
+                        <span className="font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-md text-xs mb-1">
                           {entry.totalHours.toFixed(2)} hrs
                         </span>
                         <button 
                           onClick={() => handleDeleteEntry(entry.id)} 
-                          className="text-gray-300 hover:text-red-500 p-1 -mr-1"
+                          className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 p-1 -mr-1 transition-colors"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -315,7 +327,7 @@ export default function App() {
   const renderTracker = () => {
     if (jobs.length === 0) {
       return (
-        <div className="bg-orange-50 text-orange-800 p-4 rounded-2xl flex items-start space-x-3 border border-orange-100 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300 p-4 rounded-2xl flex items-start space-x-3 border border-orange-100 dark:border-orange-900/50 animate-in fade-in slide-in-from-bottom-2 duration-300 transition-colors">
           <AlertCircle className="shrink-0 mt-0.5" size={20} />
           <p className="text-sm">You need to create a Job first. Tap the <strong>Jobs</strong> tab below to add one.</p>
         </div>
@@ -324,13 +336,13 @@ export default function App() {
 
     return (
       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-6">
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Log Work Time</h2>
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Log Work Time</h2>
           
           <form onSubmit={handleAddEntry} className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1.5">Select Job</label>
-              <select name="jobId" required className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-base">
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Select Job</label>
+              <select name="jobId" required className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 appearance-none text-base text-gray-900 dark:text-gray-100 transition-colors">
                 {jobs.map(job => (
                   <option key={job.id} value={job.id}>{job.name} ({formatCurrency(job.rate)}/hr)</option>
                 ))}
@@ -338,28 +350,28 @@ export default function App() {
             </div>
             
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1.5">Date</label>
-              <input type="date" name="date" required defaultValue={getTodayString()} className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base" />
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Date</label>
+              <input type="date" name="date" required defaultValue={getTodayString()} className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 text-base text-gray-900 dark:text-gray-100 transition-colors" />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">Start Time</label>
-                <input type="time" name="startTime" required className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base" />
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Start Time</label>
+                <input type="time" name="startTime" required className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 text-base text-gray-900 dark:text-gray-100 transition-colors" />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">End Time</label>
-                <input type="time" name="endTime" required className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base" />
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">End Time</label>
+                <input type="time" name="endTime" required className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 text-base text-gray-900 dark:text-gray-100 transition-colors" />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1.5">Unpaid Break (Minutes)</label>
-              <input type="number" name="breakMins" defaultValue="0" min="0" placeholder="e.g. 30" className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base" />
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Unpaid Break (Minutes)</label>
+              <input type="number" name="breakMins" defaultValue="0" min="0" placeholder="e.g. 30" className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 text-base text-gray-900 dark:text-gray-100 transition-colors" />
             </div>
 
             <div className="pt-2">
-              <button type="submit" className="w-full flex items-center justify-center space-x-2 bg-blue-600 active:bg-blue-700 text-white p-4 rounded-xl transition-colors font-bold text-lg shadow-md shadow-blue-600/20">
+              <button type="submit" className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl transition-colors font-bold text-lg shadow-md shadow-blue-600/20 dark:shadow-none">
                 <Play fill="currentColor" size={20} />
                 <span>Save Entry</span>
               </button>
@@ -378,15 +390,15 @@ export default function App() {
       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-6">
         
         {/* Filter Form */}
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Custom Report</h2>
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Custom Report</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1.5">Filter by Job</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Filter by Job</label>
               <select 
                 value={reportParams.jobId} 
                 onChange={(e) => setReportParams({...reportParams, jobId: e.target.value})}
-                className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-base"
+                className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 appearance-none text-base text-gray-900 dark:text-gray-100 transition-colors"
               >
                 <option value="all">All Jobs Combined</option>
                 {jobs.map(job => (
@@ -397,21 +409,21 @@ export default function App() {
             
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">Start Date</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Start Date</label>
                 <input 
                   type="date" 
                   value={reportParams.startDate}
                   onChange={(e) => setReportParams({...reportParams, startDate: e.target.value})}
-                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base" 
+                  className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 text-base text-gray-900 dark:text-gray-100 transition-colors" 
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">End Date</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">End Date</label>
                 <input 
                   type="date" 
                   value={reportParams.endDate}
                   onChange={(e) => setReportParams({...reportParams, endDate: e.target.value})}
-                  className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base" 
+                  className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 text-base text-gray-900 dark:text-gray-100 transition-colors" 
                 />
               </div>
             </div>
@@ -419,12 +431,12 @@ export default function App() {
         </div>
 
         {/* Results Cards */}
-        <div className="bg-blue-600 p-6 rounded-2xl shadow-md text-white flex flex-col items-center justify-center text-center">
-          <h4 className="text-blue-100 font-medium mb-1 text-sm uppercase tracking-wide">Total Hours</h4>
-          <h2 className="text-4xl font-bold tracking-tight mb-4">{totalHours.toFixed(2)} <span className="text-xl text-blue-300 font-normal">hrs</span></h2>
+        <div className="bg-blue-600 dark:bg-blue-900 p-6 rounded-2xl shadow-md text-white flex flex-col items-center justify-center text-center transition-colors">
+          <h4 className="text-blue-100 dark:text-blue-200 font-medium mb-1 text-sm uppercase tracking-wide">Total Hours</h4>
+          <h2 className="text-4xl font-bold tracking-tight mb-4">{totalHours.toFixed(2)} <span className="text-xl text-blue-300 dark:text-blue-400 font-normal">hrs</span></h2>
           
-          <div className="w-full border-t border-blue-500/50 pt-4 mt-2">
-            <h4 className="text-blue-100 font-medium mb-1 text-sm uppercase tracking-wide">Total Earnings</h4>
+          <div className="w-full border-t border-blue-500/50 dark:border-blue-700/50 pt-4 mt-2">
+            <h4 className="text-blue-100 dark:text-blue-200 font-medium mb-1 text-sm uppercase tracking-wide">Total Earnings</h4>
             <h2 className="text-3xl font-bold tracking-tight">{formatCurrency(totalEarnings)}</h2>
           </div>
         </div>
@@ -432,13 +444,13 @@ export default function App() {
         {/* Export Button & List Breakdown */}
         <div className="pt-2">
           <div className="flex justify-between items-center mb-3 px-1">
-            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">
+            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wide">
               Logs in Report ({reportFilteredEntries.length})
             </h3>
             {reportFilteredEntries.length > 0 && (
               <button 
                 onClick={generateExportText}
-                className="flex items-center space-x-1.5 text-blue-600 font-bold text-sm bg-blue-50 px-3 py-1.5 rounded-lg active:bg-blue-100 transition-colors"
+                className="flex items-center space-x-1.5 text-blue-600 dark:text-blue-400 font-bold text-sm bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg active:bg-blue-100 dark:active:bg-blue-900/50 transition-colors"
               >
                 <Share size={16} />
                 <span>Export Text</span>
@@ -448,21 +460,21 @@ export default function App() {
           
           <div className="space-y-3">
             {reportFilteredEntries.length === 0 ? (
-              <div className="text-center py-6 bg-white rounded-2xl border border-gray-200 border-dashed text-gray-400">
+              <div className="text-center py-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed text-gray-400 dark:text-gray-500 transition-colors">
                 <p className="text-sm">No work entries match this date range.</p>
               </div>
             ) : (
               reportFilteredEntries.map(entry => {
                 const job = jobs.find(j => j.id === entry.jobId);
                 return (
-                  <div key={entry.id} className="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+                  <div key={entry.id} className="bg-white dark:bg-gray-900 p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col transition-colors">
                     <div className="flex justify-between items-start mb-1">
-                      <p className="font-bold text-gray-900 text-sm">{job ? job.name : 'Unknown Job'}</p>
-                      <span className="text-green-600 font-bold text-sm">{formatCurrency(entry.earnings)}</span>
+                      <p className="font-bold text-gray-900 dark:text-gray-100 text-sm">{job ? job.name : 'Unknown Job'}</p>
+                      <span className="text-green-600 dark:text-green-400 font-bold text-sm">{formatCurrency(entry.earnings)}</span>
                     </div>
-                    <div className="flex justify-between items-center text-xs text-gray-500">
+                    <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
                       <span>{formatDate(entry.date)}</span>
-                      <span className="font-medium bg-gray-100 text-gray-700 px-2 py-0.5 rounded-md">
+                      <span className="font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-md">
                         {entry.totalHours.toFixed(2)} hrs
                       </span>
                     </div>
@@ -481,18 +493,18 @@ export default function App() {
       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-6">
         
         {/* Add Job Form */}
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Add New Job</h2>
+        <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Add New Job</h2>
           <form onSubmit={handleAddJob} className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1.5">Job / Client Name</label>
-              <input type="text" name="jobName" required placeholder="e.g. Delivery, Freelance..." className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base" />
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Job / Client Name</label>
+              <input type="text" name="jobName" required placeholder="e.g. Delivery, Freelance..." className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 text-base text-gray-900 dark:text-gray-100 transition-colors" />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1.5">Hourly Rate ($)</label>
-              <input type="number" name="jobRate" required min="0" step="0.01" placeholder="0.00" className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base" />
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Hourly Rate ($)</label>
+              <input type="number" name="jobRate" required min="0" step="0.01" placeholder="0.00" className="w-full p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 text-base text-gray-900 dark:text-gray-100 transition-colors" />
             </div>
-            <button type="submit" className="w-full flex items-center justify-center space-x-2 bg-gray-900 active:bg-black text-white p-3.5 rounded-xl transition-colors font-bold text-base shadow-md">
+            <button type="submit" className="w-full flex items-center justify-center space-x-2 bg-gray-900 dark:bg-gray-700 hover:bg-black dark:hover:bg-gray-600 text-white p-3.5 rounded-xl transition-colors font-bold text-base shadow-md dark:shadow-none">
               <Plus size={20} />
               <span>Create Job</span>
             </button>
@@ -500,23 +512,23 @@ export default function App() {
         </div>
 
         {/* Existing Jobs List */}
-        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide px-1 pt-2">Your Jobs</h3>
+        <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wide px-1 pt-2">Your Jobs</h3>
         <div className="space-y-3">
           {jobs.length === 0 && (
-            <div className="text-center py-8 bg-white rounded-2xl border border-gray-200 border-dashed text-gray-400">
+            <div className="text-center py-8 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed text-gray-400 dark:text-gray-500 transition-colors">
               <BriefcaseBusiness size={40} className="mx-auto mb-2 opacity-20" />
               <p className="text-sm">No jobs added yet.</p>
             </div>
           )}
           {jobs.map(job => (
-            <div key={job.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
+            <div key={job.id} className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col relative overflow-hidden transition-colors">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500 dark:bg-blue-600"></div>
               <div className="flex justify-between items-start pl-2">
                 <div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-1">{job.name}</h3>
-                  <p className="text-gray-500 text-sm">Rate: <span className="font-bold text-gray-800">{formatCurrency(job.rate)}</span>/hr</p>
+                  <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-1">{job.name}</h3>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Rate: <span className="font-bold text-gray-800 dark:text-gray-200">{formatCurrency(job.rate)}</span>/hr</p>
                 </div>
-                <button onClick={() => setJobToDelete(job.id)} className="p-2 text-gray-400 hover:text-red-500 active:bg-red-50 rounded-full transition-colors">
+                <button onClick={() => setJobToDelete(job.id)} className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 active:bg-red-50 dark:active:bg-red-900/20 rounded-full transition-colors">
                   <Trash2 size={20} />
                 </button>
               </div>
@@ -536,18 +548,25 @@ export default function App() {
   ];
 
   return (
-    // The h-[100dvh] + overflow-hidden prevents the overall body from scrolling.
-    <div className="h-[100dvh] bg-gray-100 flex flex-col text-gray-900 font-sans selection:bg-blue-200 overflow-hidden relative">
+    // Top-level theme wrapper
+    <div className={`h-[100dvh] bg-gray-100 flex flex-col font-sans overflow-hidden relative ${isDarkMode ? 'dark bg-gray-950' : ''}`}>
       
-      {/* Top App Bar - NOW INCLUDES SAFE-AREA INSET FIX */}
+      {/* Top App Bar - SAFE-AREA INSET FIX */}
       <header 
-        className="bg-blue-600 text-white px-4 pb-4 shadow-md z-20 flex items-center justify-between shrink-0"
+        className="bg-blue-600 dark:bg-gray-900 dark:border-b dark:border-gray-800 text-white px-4 pb-4 shadow-md z-20 flex items-center justify-between shrink-0 transition-colors"
         style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
       >
         <div className="flex items-center space-x-3">
           <Clock size={24} className="opacity-90" />
           <h1 className="text-xl font-bold tracking-wide">TimeEarn</h1>
         </div>
+        <button 
+          onClick={() => setIsDarkMode(!isDarkMode)} 
+          className="p-2 rounded-full hover:bg-white/10 dark:hover:bg-gray-800 transition-colors active:scale-95"
+          aria-label="Toggle Dark Mode"
+        >
+          {isDarkMode ? <Sun size={22} className="text-blue-300" /> : <Moon size={22} />}
+        </button>
       </header>
 
       {/* Main Content Area - Scroll is explicitly isolated to this tag */}
@@ -560,9 +579,9 @@ export default function App() {
         </div>
       </main>
 
-      {/* Bottom Navigation - NOW INCLUDES SAFE-AREA INSET FIX for Bottom Nav Gestures */}
+      {/* Bottom Navigation - SAFE-AREA INSET FIX for Bottom Nav Gestures */}
       <nav 
-        className="absolute bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center px-1 pt-2 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]"
+        className="absolute bottom-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 flex justify-around items-center px-1 pt-2 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] transition-colors"
         style={{ paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}
       >
         {navItems.map(item => {
@@ -573,10 +592,10 @@ export default function App() {
               onClick={() => setActiveTab(item.id)}
               className="flex flex-col items-center justify-center w-full py-1 relative"
             >
-              <div className={`px-4 py-1.5 rounded-full transition-all duration-200 ${isActive ? 'bg-blue-100 scale-110' : 'bg-transparent'}`}>
-                <item.icon size={22} className={isActive ? 'text-blue-700' : 'text-gray-500'} strokeWidth={isActive ? 2.5 : 2} />
+              <div className={`px-4 py-1.5 rounded-full transition-all duration-200 ${isActive ? 'bg-blue-100 dark:bg-blue-900/40 scale-110' : 'bg-transparent'}`}>
+                <item.icon size={22} className={isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'} strokeWidth={isActive ? 2.5 : 2} />
               </div>
-              <span className={`text-[10px] mt-1.5 font-bold transition-colors ${isActive ? 'text-blue-800' : 'text-gray-500'}`}>
+              <span className={`text-[10px] mt-1.5 font-bold transition-colors ${isActive ? 'text-blue-800 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
                 {item.label}
               </span>
             </button>
@@ -586,28 +605,28 @@ export default function App() {
 
       {/* Text Export Modal */}
       {showExportModal && (
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white p-5 rounded-3xl max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[80vh]">
-            <h3 className="text-xl font-bold mb-3 flex items-center text-gray-900">
-              <FileText className="mr-2 text-blue-600" size={24} />
+        <div className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-gray-900 p-5 rounded-3xl max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[80vh] border dark:border-gray-800">
+            <h3 className="text-xl font-bold mb-3 flex items-center text-gray-900 dark:text-gray-100">
+              <FileText className="mr-2 text-blue-600 dark:text-blue-400" size={24} />
               Export Data
             </h3>
-            <p className="text-sm text-gray-500 mb-3">Your filtered work log, ready to paste into an invoice or message.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Your filtered work log, ready to paste into an invoice or message.</p>
             <textarea
               readOnly
-              className="w-full flex-1 p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm mb-4 resize-none min-h-[160px] outline-none"
+              className="w-full flex-1 p-3 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl text-sm mb-4 resize-none min-h-[160px] outline-none text-gray-900 dark:text-gray-100"
               value={exportText}
             />
             <div className="flex justify-end space-x-3 shrink-0">
               <button 
                 onClick={() => setShowExportModal(false)} 
-                className="px-4 py-2.5 text-gray-700 active:bg-gray-100 rounded-xl font-bold text-sm transition-colors"
+                className="px-4 py-2.5 text-gray-700 dark:text-gray-300 active:bg-gray-100 dark:active:bg-gray-800 rounded-xl font-bold text-sm transition-colors"
               >
                 Close
               </button>
               <button 
                 onClick={copyToClipboard} 
-                className="px-5 py-2.5 bg-blue-600 active:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors shadow-sm flex items-center space-x-2"
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors shadow-sm flex items-center space-x-2 dark:shadow-none"
               >
                 {copied ? <CheckCircle2 size={18} /> : <Copy size={18} />}
                 <span>{copied ? 'Copied!' : 'Copy Text'}</span>
@@ -619,25 +638,25 @@ export default function App() {
 
       {/* Delete Job Confirmation Modal */}
       {jobToDelete && (
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white p-6 rounded-3xl max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
-            <h3 className="text-xl font-bold mb-3 flex items-center text-red-600">
+        <div className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border dark:border-gray-800">
+            <h3 className="text-xl font-bold mb-3 flex items-center text-red-600 dark:text-red-400">
               <AlertCircle className="mr-2" size={24} />
               Delete Job?
             </h3>
-            <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed">
               Are you sure you want to remove this job? Your previously logged hours will be saved, but they will show up as "Unknown Job".
             </p>
             <div className="flex justify-end space-x-3">
               <button 
                 onClick={() => setJobToDelete(null)} 
-                className="px-5 py-2.5 text-gray-700 active:bg-gray-100 rounded-xl font-bold text-sm transition-colors"
+                className="px-5 py-2.5 text-gray-700 dark:text-gray-300 active:bg-gray-100 dark:active:bg-gray-800 rounded-xl font-bold text-sm transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={confirmDeleteJob} 
-                className="px-5 py-2.5 bg-red-600 active:bg-red-700 text-white rounded-xl font-bold text-sm transition-colors shadow-sm shadow-red-600/30"
+                className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-colors shadow-sm shadow-red-600/30 dark:shadow-none"
               >
                 Delete
               </button>
@@ -648,4 +667,5 @@ export default function App() {
     </div>
   );
 }
+
 
