@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TimeEarn</string>
+    <string name="title_activity_main">TimeEarn</string>
+    <string name="package_name">com.riasaat.timeearn</string>
+    <string name="custom_url_scheme">com.riasaat.timeearn</string>
+</resources>
